@@ -1,4 +1,4 @@
-package coding.json.training.vo;
+package coding.json.training.dto;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
