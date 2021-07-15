@@ -1,42 +1,38 @@
 package coding.json.training.domain;
 
 
-import coding.json.training.dto.Grade;
-import coding.json.training.dto.Interests;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import coding.json.training.domain.dept.Department;
+import coding.json.training.domain.dept.Position;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.*;
 
-@Entity
+@NoArgsConstructor
 @Getter
-public class Member {
+@Entity
+public class Member { // manager administrator
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String name;
     private String email;
-    private String phone_number;
 
-    private Grade grade;
-    private Integer activityIndex;
-
-    private Integer age;
-    private String job;
-
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private List<Interests> interests = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Department department;
 
     @Builder
-    public Member(Long id, String email, String phone_number){
-        this.id = id;
+    public Member(String name, String email){
+        this.name = name;
         this.email = email;
-        this.phone_number = phone_number;
     }
+
+    public void addDepartment(Department department){
+        this.department = department;
+        department.getMembers().add(this);
+    }
+
+
 }

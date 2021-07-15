@@ -1,7 +1,6 @@
 package coding.json.training.controller;
 
-import coding.json.training.dto.Grade;
-import coding.json.training.dto.MemberDto;
+import coding.json.training.dto.MemberResponseDto;
 import coding.json.training.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,9 +17,9 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/api/v1/members")
-    public List<MemberDto> members(){
+    public List<MemberResponseDto> members(){
 
-        return memberService.findMembersByGrade(Grade.VIP);
+        return memberService.findMembers();
 
     }
 
