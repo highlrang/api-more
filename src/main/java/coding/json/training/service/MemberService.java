@@ -1,5 +1,7 @@
 package coding.json.training.service;
 
+import coding.json.training.domain.Member;
+import coding.json.training.dto.MemberRequestDto;
 import coding.json.training.dto.MemberResponseDto;
 import coding.json.training.repository.MemberRepository;
 import lombok.Data;
@@ -31,6 +33,23 @@ public class MemberService {
             .stream()
             .map(MemberResponseDto::new)
             .collect(Collectors.toList());
+    }
+
+    public MemberResponseDto findById(Long id){
+        Member member = memberRepository.findById(id).orElseThrow(IllegalStateException::new);
+        return new MemberResponseDto(member);
+    }
+
+    public Long saveMember(MemberRequestDto memberRequestDto){
+        return memberRepository.save(memberRequestDto.toEntity()).getId();
+    }
+
+    public void deleteMember(Long id){
+        Member member = memberRepository.findById(id)
+                .orElseThrow(IllegalStateException::new);
+
+        member.getDepartment().removeMember(member);
+        memberRepository.delete(member);
     }
 
     // restTemplate !!!

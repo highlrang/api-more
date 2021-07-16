@@ -23,12 +23,12 @@ public class MemberRequestDto {
         this.department = department;
     }
 
-    public Member toMember(MemberRequestDto m){
+    public Member toEntity(){
         Member member = Member.builder()
-                .name(m.getName())
-                .email(m.getEmail())
+                .name(name)
+                .email(email)
                 .build();
-        member.addDepartment(m.getDepartment());
+        member.addDepartment(department);
         return member;
     }
 }

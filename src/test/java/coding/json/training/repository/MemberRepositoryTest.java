@@ -18,27 +18,23 @@ class MemberRepositoryTest {
 
     @Autowired private DepartmentRepository departmentRepository;
     @Autowired private MemberRepository memberRepository;
-    @Autowired private PostAdminRepository postAdminRepository;
 
     @Test
     public void 멤버저장(){
-        PostAdmin admin = new PostAdmin(Position.Staff, Category.Exercise);
-        Department dept = departmentRepository.save(admin);
-
+        PostAdmin admin = new PostAdmin(Position.Staff, Category.Exercise); // findById
+        PostAdmin savedAdmin = (PostAdmin) departmentRepository.save(admin);
 
         Member member = Member.builder()
                 .name("정혜우")
                 .email("jhw127@naver.com")
                 .build();
-        member.addDepartment(dept);
+        member.addDepartment(savedAdmin);
         Member result = memberRepository.save(member);
 
-        PostAdmin after = postAdminRepository.findById(dept.getId()).get();
-        assertThat(after.getCategory()).isEqualTo(Category.Exercise);
+        assertThat(savedAdmin.getCategory()).isEqualTo(Category.Exercise);
 
         assertThat(result.getDepartment().getMembers().size()).isNotEqualTo(0);
         assertThat(result.getDepartment().getPosition()).isEqualTo(Position.Staff);
 
     }
-
 }

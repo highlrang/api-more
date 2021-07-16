@@ -34,4 +34,7 @@ public abstract class Department {
         this.position = position;
     }
 
+    public void removeMember(Member member){
+        this.members.remove(member);
+    }
 }
