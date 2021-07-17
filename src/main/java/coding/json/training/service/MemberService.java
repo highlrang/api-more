@@ -1,9 +1,12 @@
 package coding.json.training.service;
 
 import coding.json.training.domain.Member;
+import coding.json.training.domain.dept.Category;
+import coding.json.training.dto.BestPostAdminDto;
 import coding.json.training.dto.MemberRequestDto;
 import coding.json.training.dto.MemberResponseDto;
 import coding.json.training.repository.MemberRepository;
+import coding.json.training.repository.PostAdminRepository;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,6 +31,7 @@ import java.util.stream.Collectors;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final PostAdminRepository postAdminRepository;
 
     public List<MemberResponseDto> findMembers(){
         return memberRepository.findAll()
@@ -50,6 +55,20 @@ public class MemberService {
 
         member.getDepartment().removeMember(member);
         memberRepository.delete(member);
+    }
+
+    public List<MemberResponseDto> findBestPostAdmin() {
+        Map<Category, Integer> maxDegree = postAdminRepository.findMaxDegreeByCategory()
+                .stream()
+                .collect(Collectors.toMap(i -> (Category)i[0], i -> (Integer)i[1]));
+
+
+        List<BestPostAdminDto> results = new ArrayList<>();
+        for(Category category: maxDegree.keySet()){
+            results.addAll(memberRepository.findBestPostAdmins(category.name(), maxDegree.get(category)));
+        }
+
+        return new ArrayList<>();
     }
 
     // restTemplate !!!
