@@ -2,9 +2,9 @@ package coding.json.training.repository;
 
 import coding.json.training.domain.Member;
 import coding.json.training.domain.dept.Category;
-import coding.json.training.domain.dept.Department;
 import coding.json.training.domain.dept.Position;
 import coding.json.training.domain.dept.PostAdmin;
+import coding.json.training.repository.member.MemberRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

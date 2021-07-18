@@ -5,20 +5,12 @@ import coding.json.training.domain.dept.Category;
 import coding.json.training.dto.BestPostAdminDto;
 import coding.json.training.dto.MemberRequestDto;
 import coding.json.training.dto.MemberResponseDto;
-import coding.json.training.repository.MemberRepository;
+import coding.json.training.repository.member.MemberQueryRepository;
+import coding.json.training.repository.member.MemberRepository;
 import coding.json.training.repository.PostAdminRepository;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +23,7 @@ import java.util.stream.Collectors;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final MemberQueryRepository memberQueryRepository;
     private final PostAdminRepository postAdminRepository;
 
     public List<MemberResponseDto> findMembers(){
@@ -57,7 +50,7 @@ public class MemberService {
         memberRepository.delete(member);
     }
 
-    public List<MemberResponseDto> findBestPostAdmin() {
+    public List<BestPostAdminDto> findBestPostAdmin() {
         Map<Category, Integer> maxDegree = postAdminRepository.findMaxDegreeByCategory()
                 .stream()
                 .collect(Collectors.toMap(i -> (Category)i[0], i -> (Integer)i[1]));
@@ -65,10 +58,10 @@ public class MemberService {
 
         List<BestPostAdminDto> results = new ArrayList<>();
         for(Category category: maxDegree.keySet()){
-            results.addAll(memberRepository.findBestPostAdmins(category.name(), maxDegree.get(category)));
+            results.addAll(memberQueryRepository.findBestPostAdmins(category.name(), maxDegree.get(category)));
         }
 
-        return new ArrayList<>();
+        return results;
     }
 
     // restTemplate !!!
