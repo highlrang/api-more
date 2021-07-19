@@ -7,6 +7,7 @@ import coding.json.training.domain.dept.PostAdmin;
 import coding.json.training.dto.BestPostAdminDto;
 import coding.json.training.repository.DepartmentRepository;
 import coding.json.training.repository.member.MemberQueryRepository;
+import coding.json.training.repository.member.MemberQuerydslRepository;
 import coding.json.training.repository.member.MemberRepository;
 import coding.json.training.repository.PostAdminRepository;
 import org.junit.Test;
@@ -31,6 +32,7 @@ public class DataInsertTest {
     @Autowired MemberQueryRepository memberQueryRepository;
     @Autowired DepartmentRepository departmentRepository;
     @Autowired PostAdminRepository postAdminRepository;
+    @Autowired MemberQuerydslRepository memberQuerydslRepository;
 
     @Test // @Commit
     public void 멤버저장(){
@@ -94,6 +96,12 @@ public class DataInsertTest {
             System.out.println(b.getName());
         }
 
+    }
+
+    @Test
+    public void querydsl(){
+        List<BestPostAdminDto> results = memberQuerydslRepository.findBestPostAdmins(Category.Exercise, 20);
+        results.forEach(r -> System.out.println(r.getName()));
     }
 
 
