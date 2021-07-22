@@ -1,10 +1,10 @@
-package coding.json.practice;
+package coding.json.practice.origin;
 
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class Multi implements Runnable{
+public class MultiThread implements Runnable{
 
     @Override
     public void run() {

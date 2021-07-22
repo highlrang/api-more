@@ -1,5 +1,6 @@
-package coding.json.practice;
+package coding.json.practice.origin;
 
+import coding.json.practice.origin.MultiThread;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,14 +18,14 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class Main {
+public class OriginMain {
     public static void main(String[] args) throws IOException {
         // BlockingQueue<Runnable> ArrayBlockingQueue
         ThreadPoolExecutor threadPool = new ThreadPoolExecutor(3, 100, 10, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
         // 데몬이 아니므로 shutdown() 으로 종료시켜야함 또는 - allowCoreThreadTimeOut을 true로 해서 core thread 종료
         threadPool.allowCoreThreadTimeOut(true);
 
-        Runnable r1 = new Multi();
+        Runnable r1 = new MultiThread();
 
         for(int i=0; i<100; i++){
             threadPool.execute(r1);

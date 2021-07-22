@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -61,8 +62,13 @@ public class MemberService {
             results.addAll(memberQueryRepository.findBestPostAdmins(category.name(), maxDegree.get(category)));
         }
 
+        /*
+        for(Entry<Category, Integer> entry : maxDegree.entrySet()){
+            entry.getKey();
+            entry.getValue();
+        }
+         */
+
         return results;
     }
-
-    // restTemplate !!!
 }

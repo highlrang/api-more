@@ -104,5 +104,10 @@ public class DataInsertTest {
         results.forEach(r -> System.out.println(r.getName()));
     }
 
+    @Test
+    public void 이누머레이트(){
+        Position p = Position.AssistantManager;
+        System.out.println(p.getKey());
+    }
 
 }

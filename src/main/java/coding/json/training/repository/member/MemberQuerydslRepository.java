@@ -65,13 +65,13 @@ public class MemberQuerydslRepository { // extends QuerydslRepositorySupport
             .leftJoin(department.members, member)
             .transform(groupBy(department).as(list(member))); // 이후에 원하는 dto로 변형
 
-            // .as(new Dto(department.col, member.col)) 가능? 생성자에 @QueryProjection
+            // .as(new Dto(department.col, member.col)) 생성자에 @QueryProjection
             // .as(map(col, col)) .asMultimap(map(col, col))
             // .as(sum()) .as(max(()) .as(Projections.constructor())
 
 
 
-    // oneToOne 관계도 innerJoin 필요
+    // oneToOne 관계도 cross join과 추가 쿼리 피하기 위해 innerJoin 필요
 
 
 
@@ -89,6 +89,29 @@ public class MemberQuerydslRepository { // extends QuerydslRepositorySupport
 
 
     count 보다 exists의 성능이 더 좋음 >> exists 없기에 fetchFirst()으로 우회해서 사용(== limit 1)
+
+
+    동적 쿼리 where절에 BooleanExpression return null or other
+
+    서브 쿼리
+    - select 절 ExpressionUtils.as()
+    queryFactory
+                .select(Projections.fields(StudentCount.class,
+                        academy.name.as("academyName"),
+
+                        ExpressionUtils.as(
+                                JPAExpressions.select(count(student.id))
+                                        .from(student)
+                                        .where(student.academy.eq(academy)),
+                                "studentCount")
+                )).from()
+
+     - where 절은 ExpressionUtils 없이 가능
+     .where(academy.id.in(
+            JPAExpressions
+                    .select(student.academy.id)
+                    .from(student)
+                    .where(student.id.eq(studentId))))
 
      */
 }

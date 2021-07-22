@@ -3,10 +3,12 @@ package coding.json;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 
 @EnableJpaAuditing
+@EnableAspectJAutoProxy(proxyTargetClass = true) // interface 아닌 class 상속 받아서 proxt화
 @SpringBootApplication
 public class JsonApplication {
 
@@ -14,4 +16,5 @@ public class JsonApplication {
 		SpringApplication.run(JsonApplication.class, args);
 	}
 
+	// @EqualsAndHashCode(exclude = { "id", .. })
 }

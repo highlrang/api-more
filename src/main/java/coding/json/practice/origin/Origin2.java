@@ -1,5 +1,6 @@
-package coding.json.practice;
+package coding.json.practice.origin;
 
+import coding.json.practice.vo.UserVO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 
@@ -110,8 +111,4 @@ public class Origin2 {
 
 
 }
-
-    // Cross origin 해결
-    // 멀티 쓰레드 처리
-    // 예외 처리
 

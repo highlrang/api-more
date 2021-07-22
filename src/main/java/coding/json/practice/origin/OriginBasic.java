@@ -1,5 +1,6 @@
-package coding.json.practice;
+package coding.json.practice.origin;
 
+import coding.json.practice.vo.UserVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;

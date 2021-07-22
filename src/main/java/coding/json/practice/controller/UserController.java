@@ -1,5 +1,6 @@
-package coding.json.practice;
+package coding.json.practice.controller;
 
+import coding.json.practice.vo.UserVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;

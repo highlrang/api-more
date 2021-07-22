@@ -1,4 +1,4 @@
-package coding.json.practice;
+package coding.json.practice.origin;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -8,7 +8,7 @@ import java.net.URL;
 import java.util.Scanner;
 
 public class Origin {
-    public static void main(String[] args) {
+    public void originConnect() {
         try {
             URL url = new URL("http://127.0.0.1");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -21,14 +21,9 @@ public class Origin {
             // JSONObject obj = new (JsonObject)parse.parse(line);
             // obj.get("key");
 
-        }catch(MalformedURLException e){
-            e.printStackTrace();
-
-        } catch (ProtocolException e) {
-            e.printStackTrace();
-
         } catch (IOException e) {
             e.printStackTrace();
+
         }
     }
 

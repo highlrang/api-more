@@ -4,10 +4,18 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-@Getter
-public enum Position {
+public enum Position{
 
-    Staff("사원"), SeniorStaff("대리"), AssistantManager("주임"), Manager("대리"), DeputyGeneralManager("과장"), GeneralManager("차장");
+    Staff("사원"), SeniorStaff("주임"), AssistantManager("대리"),
+    Manager("과장"), DeputyGeneralManager("차장"), GeneralManager("부장");
 
     private final String name;
+
+    public String getKey(){
+        return name();
+    }
+
+    public String getValue(){
+        return name;
+    }
 }

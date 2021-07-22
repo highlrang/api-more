@@ -1,4 +1,4 @@
-package coding.json.practice;
+package coding.json.practice.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,7 +10,7 @@ import java.util.concurrent.Executor;
 // @Async with ThreadPoolTaskExecutor
 @Configuration
 @EnableAsync
-public class SpringAsyncConfig {
+public class AsyncConfig {
 
     @Bean(name = "threadPoolTaskExecutor")
     public Executor threadPoolTaskExecutor() {
