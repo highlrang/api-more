@@ -73,8 +73,8 @@ public class Origin2 {
 
             // if(conn.getResponseCode() == HttpURLConnection.HTTP_OK) log.info(String.valueOf(conn.getErrorStream()));
 
-            UserVO user1 = new UserVO(1, "Post controller testing ...");
-            UserVO user2 = new UserVO(1, "Second Post Controller testing ...");
+            UserVO user1 = new UserVO(1L, "first", 20, "1@naver.com", "0000");
+            UserVO user2 = new UserVO(2L, "second", 20, "2@naver.com", "0000");
             List<UserVO> userList = new ArrayList<>();
             userList.add(user1);
             userList.add(user2);

@@ -6,6 +6,7 @@ import coding.json.training.dto.BestPostAdminDto;
 import coding.json.training.dto.MemberRequestDto;
 import coding.json.training.dto.MemberResponseDto;
 import coding.json.training.repository.member.MemberQueryRepository;
+import coding.json.training.repository.member.MemberQuerydslRepository;
 import coding.json.training.repository.member.MemberRepository;
 import coding.json.training.repository.PostAdminRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final MemberQueryRepository memberQueryRepository;
+    private final MemberQuerydslRepository memberQuerydslRepository;
     private final PostAdminRepository postAdminRepository;
 
     public List<MemberResponseDto> findMembers(){
@@ -59,7 +60,7 @@ public class MemberService {
 
         List<BestPostAdminDto> results = new ArrayList<>();
         for(Category category: maxDegree.keySet()){
-            results.addAll(memberQueryRepository.findBestPostAdmins(category.name(), maxDegree.get(category)));
+            results.addAll(memberQuerydslRepository.findBestPostAdmins(category, maxDegree.get(category)));
         }
 
         /*

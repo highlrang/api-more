@@ -16,7 +16,11 @@ import java.util.Arrays;
 public class ExeTimeAspect {
 
     @Pointcut("execution(* coding.json.training.service.MemberService.*(..))") // 공통기능 적용 대상 설정
-    private void publicTarget(){
+    private void trainingServiceTarget(){
+    }
+
+    @Pointcut("execution(* coding.json.practice.service.NewService.*(..))")
+    private void practiceServiceTarget(){
     }
 
     // execution
@@ -26,8 +30,8 @@ public class ExeTimeAspect {
     // * com.abc.service.*.*(..)
     // * com.abc.service..*.*(...)
     // within, bean 등 있음
-    @Around("publicTarget(* )") // 여기에 바로 정규식으로 대상 설정도 가능
-    public Object measure(ProceedingJoinPoint joinPoint) throws Throwable{
+    @Around("trainingServiceTarget()") // 여기에 바로 정규식으로 대상 설정도 가능
+    public Object measureTraining(ProceedingJoinPoint joinPoint) throws Throwable{
 
         long start = System.nanoTime(); // 대상 실행 전 공통 기능
 
@@ -43,6 +47,26 @@ public class ExeTimeAspect {
                     joinPoint.getTarget().getClass().getSimpleName(),
                     sig.getName(), Arrays.toString(joinPoint.getArgs()),
                     (finish - start));
+        }
+
+    }
+
+    @Around("practiceServiceTarget()")
+    public Object measurePractice(ProceedingJoinPoint joinPoint) throws Throwable{
+
+        long start = System.nanoTime();
+
+        try{
+            Object result = joinPoint.proceed();
+            return result;
+
+        }finally{
+            long finish = System.nanoTime();
+            Signature sig = joinPoint.getSignature();
+            System.out.printf("%s.%s(%s) 실행 시간 :  %d s\n",
+                    joinPoint.getTarget().getClass().getSimpleName(),
+                    sig.getName(), Arrays.toString(joinPoint.getArgs()),
+                    ((finish - start)) / 1000000000);
         }
 
     }

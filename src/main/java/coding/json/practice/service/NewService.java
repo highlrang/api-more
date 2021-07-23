@@ -9,6 +9,7 @@ import io.netty.handler.timeout.WriteTimeoutHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.service.spi.InjectService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,14 +19,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriBuilderFactory;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 
 import java.io.IOException;
 import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -33,97 +34,101 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class NewService {
 
-    private final WebClient webClient = (WebClient) WebClient.create()
-            .mutate().defaultHeaders(httpHeaders -> {
-                httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-                httpHeaders.setAccept((List<MediaType>) MediaType.APPLICATION_JSON);
-            })
-            .baseUrl("http://127.0.0.01:9090/external/api/v1/users");
+    private final WebClient webClient = WebClient.create();
+    // private static final int THREAD_POOL_SIZE = 100;
+    // private final Executor executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+    @Autowired private Executor threadPoolTaskExecutor; // bean
+    @Autowired private NewAsyncService asyncService;
 
-    // 에러 처리 추가하기
+    public List<UserVO> getAllInfo() throws ExecutionException, InterruptedException {
+        for(int i=1; i<51; i++) asyncService.asyncMethod(i);
 
-    public List<UserVO> getAllInfo(){
-
-        List<UserVO> users = (List<UserVO>) findAllUsers();
-
+        List<UserVO> users = findAllUsers();
         List<Long> userIds = users.stream()
                 .map(UserVO::getId)
                 .collect(Collectors.toList());
 
-        Map<Long, List<UserFriendVO>> friends = (Map<Long, List<UserFriendVO>>) findUserDetails(userIds);
-        Map<Long, PositionVO> positions = (Map<Long, PositionVO>) findPositions(userIds);
+        return asyncMethod(users, userIds);
 
-        // forEach문 비동기로 해야하나? 유의미한 성능 개선인지 확인하기
+    }
+
+
+    public List<UserVO> asyncMethod(List<UserVO> users, List<Long> userIds) throws ExecutionException, InterruptedException {
+
+        Map<Long, List<UserFriendVO>> friends = new HashMap<>();
+        Map<Long, PositionVO> positions = new HashMap<>();
+
+        for(Long userId : userIds) {
+            CompletableFuture.supplyAsync(() -> friends.put(userId, findUserFriends(userId)), threadPoolTaskExecutor);
+            CompletableFuture.supplyAsync(() -> positions.put(userId, findPosition(userId)), threadPoolTaskExecutor);
+        }
+
         users.forEach(u -> {u.addFriends(friends.get(u.getId())); u.addPosition(positions.get(u.getId())); });
 
         return users;
     }
 
-    @Async("threadPoolTaskExecutor")
-    public CompletableFuture findAllUsers() {
-
-        List<UserVO> users = new ArrayList<>();
+    public List<UserVO> findAllUsers() {
 
         Mono<UserVO[]> mono = webClient.mutate()
+                .defaultHeaders(httpHeaders -> {
+                    httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+                    httpHeaders.add("Accept", "application/json");
+                })
+                .baseUrl("http://127.0.0.1:9090/external/api/v1/users")
                 .build()
                 .get()
                 .retrieve()
                 .bodyToMono(UserVO[].class);
 
-        users.addAll(Arrays.asList(mono.block()));
+        List<UserVO> users = Arrays.asList(mono.block());
 
-        return CompletableFuture.completedFuture(users);
+        return users;
     }
 
-    @Async("threadPoolTaskExecutor")
-    public CompletableFuture findUserDetails(List<Long> userIds){
-        Map<Long, List<UserFriendVO>> userFriends = new HashMap<>();
-        // String baseUrl = "http://127.0.0.01:9090/external/api/v1/users/";
 
-        for(Long userId : userIds) {
+    public List<UserFriendVO> findUserFriends(Long userId){
 
-            Mono<UserFriendVO[]> mono = webClient.mutate()
+        Mono<UserFriendVO[]> mono = webClient.mutate()
+                    .defaultHeaders(httpHeaders -> {
+                        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+                        httpHeaders.add("Accept", "application/json");
+                    })
+                    .baseUrl("http://127.0.0.1:9090/external/api/v1/users")
                     .build()
                     .get()
                     .uri(uriBuilder -> uriBuilder
-                            .path("/")
-                            .queryParam("userId", userId)
-                            .path("/friends-info")
-                            .build()
+                            .path("/{userId}/friends-info")
+                            // .queryParam("userId", userId)
+                            .build(userId)
                     )
                     .retrieve()
                     .bodyToMono(UserFriendVO[].class);
 
-            List<UserFriendVO> friends = Arrays.asList(mono.block());
-            userFriends.put(userId, friends);
-
-        }
-
-        return CompletableFuture.completedFuture(userFriends);
+        List<UserFriendVO> friends = Arrays.asList(mono.block());
+        return friends;
     }
 
-    @Async("threadPoolTaskExecutor")
-    public CompletableFuture findPositions(List<Long> userIds){
 
-        Map<Long, PositionVO> positionMap = new HashMap<>();
+    public PositionVO findPosition(Long userId){
 
-        for(Long userId : userIds){
-            Mono<PositionVO> mono = webClient.mutate()
+        Mono<PositionVO> mono = webClient.mutate()
+                    .defaultHeaders(httpHeaders -> {
+                        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+                        httpHeaders.add("Accept", "application/json");
+                    })
+                    .baseUrl("http://127.0.0.1:9090/external/api/v1/users")
                     .build()
                     .get()
                     .uri(uriBuilder -> uriBuilder
-                            .path("/")
-                            .queryParam("userId", userId)
-                            .path("/position-info")
-                            .build()
+                            .path("/{userId}/position-info")
+                            // .queryParam("userId", userId)
+                            .build(userId)
                     ).retrieve()
                     .bodyToMono(PositionVO.class);
 
-            positionMap.put(userId, mono.block());
-
-        }
-
-        return CompletableFuture.completedFuture(positionMap);
+        PositionVO position = mono.block();
+        return position;
     }
 
 

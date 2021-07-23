@@ -79,7 +79,7 @@ public class OriginBasic {
         try{
             // object
             UserVO user = mapper.readValue(string, UserVO.class);
-            log.info(this.getClass() + " Object alias1 : " + user.getDetails().get(0).getAlias());
+            log.info(this.getClass() + " Object relation1 : " + user.getFriends().get(0).getRelation());
 
             // JsonNode
             JsonNode node = mapper.readValue(string, JsonNode.class);

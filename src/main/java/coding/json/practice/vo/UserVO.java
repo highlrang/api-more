@@ -23,7 +23,7 @@ public class UserVO {
     private String phoneNumber;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private List<UserFriendVO> details = new ArrayList<>();
+    private List<UserFriendVO> friends = new ArrayList<>();
 
     // entity에서는 임베디드로
     private PositionVO position;
@@ -38,8 +38,8 @@ public class UserVO {
 
 
     // @JsonSetter("details")
-    public void addFriends(List<UserFriendVO> details){
-        this.details = details;
+    public void addFriends(List<UserFriendVO> friends){
+        this.friends = friends;
     }
 
     public void addPosition(PositionVO position){
@@ -47,6 +47,6 @@ public class UserVO {
     }
 
     public String toString(){
-        return "id = " + id + " name = " + name + " details = " + details;
+        return "id = " + id + " name = " + name;
     }
 }

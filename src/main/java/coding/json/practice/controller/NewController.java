@@ -5,9 +5,11 @@ import coding.json.practice.vo.PositionVO;
 import coding.json.practice.vo.UserFriendVO;
 import coding.json.practice.vo.UserVO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 
 @RestController
@@ -17,11 +19,11 @@ public class NewController {
     private final NewService newService;
 
     @GetMapping("/api/v1/users")
-    public List<UserVO> usersAllInfo(){
+    public List<UserVO> usersAllInfo() throws ExecutionException, InterruptedException {
         return newService.getAllInfo();
     }
 
-    @GetMapping("external/api/v1/users")
+    @GetMapping("/external/api/v1/users")
     public List<UserVO> users(){
         List<UserVO> users = new ArrayList<>();
 
@@ -50,7 +52,8 @@ public class NewController {
     @GetMapping("/external/api/v1/users/{userId}/position-info")
     public PositionVO position(@PathVariable("userId") Long userId){
 
-        PositionVO position = new PositionVO(userId, "백엔드", "사원");
+        Long id = userId * 2;
+        PositionVO position = new PositionVO(id, userId, "백엔드", "사원");
 
         return position;
     }

@@ -24,8 +24,8 @@ public class UserController {
     @GetMapping("/test")
     public List<UserVO> testGet(){
 
-        UserVO user1 = new UserVO(1, "GET method test ...");
-        UserVO user2 = new UserVO(2, "Second Data in List Test");
+        UserVO user1 = new UserVO(1L, "first", 20, "1@naver.com", "0000");
+        UserVO user2 = new UserVO(2L, "second", 20, "2@naver.com", "0000");
         List<UserVO> users = new ArrayList<>();
         users.add(user1);
         users.add(user2);
