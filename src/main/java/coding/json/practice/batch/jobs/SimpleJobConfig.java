@@ -34,7 +34,7 @@ public class SimpleJobConfig {
     @Bean
     @JobScope // Step에서 사용 가능
     // @StepScope >> jobParameters, jobExecutionContext, stepExecutionContext
-    // Tasklet, Item... 등에서 사용 가능
+    // Tasklet, ItemReader-ItemWriter 등에서 사용 가능
     // @Bean과 함께 사용할 경우 proxy 모드 (read만 가능) >> ItemReader 등이 아닌 실제 return 객체를 명시하기 (JpaPagingItemReader<T>)
     public Step simpleStep1(@Value("#{jobParameters[requestDate]}") String requestDate){
         return stepBuilderFactory.get("simpleStep1")

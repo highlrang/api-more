@@ -19,7 +19,7 @@ import java.util.Random;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class DeciderJobConfiguration {
+public class DeciderJobConfig {
 
     // step과 decider(분기로직) 분리
    private final JobBuilderFactory jobBuilderFactory;

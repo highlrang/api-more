@@ -1,6 +1,6 @@
 package coding.json.practice.batch.jobs;
 
-import coding.json.practice.batch.Pay;
+import coding.json.practice.batch.jobs.etc.entity.Pay;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -22,9 +22,8 @@ import javax.persistence.EntityManagerFactory;
 // 웬만하면 JdbcItemReader (querydql의 경우 HibernateItemReader)
 
 // cursor 기반과 paging 기반
-// (전자는 ResultSet과 직접 연동하여 데이터를 읽어오는 것인데, 일종의 stream 과 같다고 보시면 됩니다.
-// 사실상 전체를 조회하여 stream처럼 지속적으로 데이터를 가져오는 방식이기에 페이징 이슈는 발생하지 않습니다.
-// 또한, 성능 역시 PagingItemReader보다 좋습니다.
+// (전자는 ResultSet과 직접 연동하여 데이터를 읽어오는 것인데, 일종의 stream
+// 전체를 조회하여 가져오는 방식이기에 페이징 이슈는 발생하지 않음, PagingItemReader보다 성능 좋음
 // 후자는 대량의 데이터, 멀티쓰레드 환경에서 사용. JPA에서는 paging만 지원)
 @Slf4j
 @RequiredArgsConstructor
@@ -53,7 +52,7 @@ public class JpaPagingItemReaderJobConfig {
     }
 
     @Bean
-    public JpaPagingItemReader<Pay> jpaPagingItemReader(){
+    public JpaPagingItemReader<Pay> jpaPagingItemReader(){ // RepositoryItemReader
         return new JpaPagingItemReaderBuilder<Pay>()
                 .name("jpaPagingItemReader")
                 .entityManagerFactory(entityManagerFactory)
