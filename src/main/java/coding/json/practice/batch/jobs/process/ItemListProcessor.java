@@ -1,7 +1,7 @@
-package coding.json.practice.batch.jobs.etc;
+package coding.json.practice.batch.jobs.process;
 
-import coding.json.practice.batch.jobs.etc.entity.Sales;
-import coding.json.practice.batch.jobs.etc.entity.Tax;
+import coding.json.practice.batch.jobs.entity.Sales;
+import coding.json.practice.batch.jobs.entity.Tax;
 import org.springframework.batch.item.ItemProcessor;
 
 import java.util.Arrays;

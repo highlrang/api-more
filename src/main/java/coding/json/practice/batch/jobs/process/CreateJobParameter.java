@@ -1,6 +1,5 @@
-package coding.json.practice.batch.jobs.etc;
+package coding.json.practice.batch.jobs.process;
 
-import coding.json.practice.batch.jobs.etc.entity.ProductStatus;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -10,9 +9,9 @@ import java.time.format.DateTimeFormatter;
 public class CreateJobParameter{
 
     private LocalDate createDate;
-    private ProductStatus status;
+    private String status;
 
-    public CreateJobParameter(String createDateStr, ProductStatus status){
+    public CreateJobParameter(String createDateStr, String status){
         this.createDate = LocalDate.parse(createDateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         this.status = status;
     }

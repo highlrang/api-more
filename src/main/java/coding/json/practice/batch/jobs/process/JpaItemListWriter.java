@@ -1,4 +1,4 @@
-package coding.json.practice.batch.jobs.etc;
+package coding.json.practice.batch.jobs.process;
 
 import org.springframework.batch.item.database.JpaItemWriter;
 

@@ -53,6 +53,13 @@ public class Member { // manager administrator
         this.email = email;
     }
 
+    public Member(Member member) {
+        id = member.getId();
+        name = member.getName();
+        email = member.getEmail();
+        department = member.getDepartment();
+    }
+
     public void addDepartment(Department department){
         this.department = department;
         department.getMembers().add(this);

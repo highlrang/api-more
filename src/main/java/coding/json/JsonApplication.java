@@ -6,11 +6,13 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 
 @EnableJpaAuditing
 @EnableAspectJAutoProxy // (proxyTargetClass = true) // interface 아닌 class 상속 받아서 proxy화
 @EnableBatchProcessing
+@EnableScheduling
 @SpringBootApplication
 public class JsonApplication {
 

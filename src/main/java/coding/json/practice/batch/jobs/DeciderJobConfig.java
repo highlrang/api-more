@@ -22,12 +22,12 @@ import java.util.Random;
 public class DeciderJobConfig {
 
     // step과 decider(분기로직) 분리
-   private final JobBuilderFactory jobBuilderFactory;
+    private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
     @Bean
     public Job deciderJob(){
-        return jobBuilderFactory.get("deciderJob")
+        return jobBuilderFactory.get("stepDeciderJob")
                 .start(startStep())
                 .next(decider())
                 .from(decider())

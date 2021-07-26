@@ -20,14 +20,14 @@ public class StepNextConditionalJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
 
     @Bean
-    public Job stepNextConditionalJob(){
+    public Job stepJob(){
         return jobBuilderFactory.get("stepNextConditionalJob")
-                .start(conditionalJobStep1()) // 실패면 3로
+                .start(conditionalJobStep1())                       // 실패면 3으로
                     .on("FAILED")
                     .to(conditionalJobStep3())
                     .on("*")
                     .end()
-                .from(conditionalJobStep1()) // 그 외는 1 > 2 > 3
+                .from(conditionalJobStep1())                        // 그 외는 1 > 2 > 3
                     .on("*")
                     .to(conditionalJobStep2())
                     .next(conditionalJobStep3())
@@ -40,7 +40,7 @@ public class StepNextConditionalJobConfig {
 
     @Bean
     public Step conditionalJobStep1(){
-        return stepBuilderFactory.get("step1")
+        return stepBuilderFactory.get("conditionalJobStep1")
                 .tasklet((contribution, chunkContext) -> {
                     log.info(">>>> This is stepNextConditionalJop step1");
                     contribution.setExitStatus(ExitStatus.FAILED); // batchStatus가 아닌 ExitStatus
