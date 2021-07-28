@@ -29,13 +29,15 @@ public class BatchScheduler {
         try {
             log.info("---------------job 실행 전----------------");
 
+            job.setChunkSize(10);
+
             jobLauncher.run(
                     job.noOffsetJob(),
                     // new JobParametersBuilder().toJobParameters()
                     new JobParametersBuilder()
                             .addString("datetime", LocalDateTime.now().toString())
                             .addString("email", "@")
-                            .addString("chunk", "10")
+                            // .addString("chunk", "10")
                             // .addJobParameters(new JobParameters())
                             .toJobParameters()
             );

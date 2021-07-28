@@ -4,7 +4,6 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
-
 import javax.persistence.EntityManagerFactory;
 import java.util.function.Function;
 

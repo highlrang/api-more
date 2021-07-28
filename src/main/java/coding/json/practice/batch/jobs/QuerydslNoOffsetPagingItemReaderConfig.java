@@ -5,6 +5,7 @@ import coding.json.practice.batch.jobs.process.Option;
 import coding.json.practice.batch.jobs.process.QuerydslNoOffsetPagingItemReader;
 import coding.json.practice.batch.jobs.process.QuerydslPagingItemReaderJobParameter;
 import coding.json.training.domain.Member;
+import coding.json.training.domain.QMember;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -27,7 +28,7 @@ import static coding.json.training.domain.QMember.member;
 @RequiredArgsConstructor
 @Configuration
 public class QuerydslNoOffsetPagingItemReaderConfig {
-    public static final String JOB_NAME = "querydslNoOffsetPagingReaderJob";
+    public static String JOB_NAME = "querydslNoOffsetPagingReaderJob";
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -35,7 +36,7 @@ public class QuerydslNoOffsetPagingItemReaderConfig {
     private final QuerydslPagingItemReaderJobParameter jobParameter;
 
     private int chunkSize;
-    @Value("${chunkSize:1000}")
+    @Value("${chunkSize:10}") // 1000 어떻게 setting?
     public void setChunkSize(int chunkSize) {
         this.chunkSize = chunkSize;
     }
@@ -67,8 +68,7 @@ public class QuerydslNoOffsetPagingItemReaderConfig {
     public QuerydslNoOffsetPagingItemReader<Member> reader() {
         // 1. No Offset 옵션
         Option options = new Option(member.id, Order.DESC);
-        log.info("chunkSize : " + chunkSize);
-        log.info("email : " + jobParameter.getEmail());
+
         // 2. Querydsl
         return new QuerydslNoOffsetPagingItemReader<>(emf, chunkSize, options, queryFactory -> queryFactory
                 .selectFrom(member)

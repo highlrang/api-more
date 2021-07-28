@@ -4,20 +4,25 @@ import com.querydsl.core.types.Order;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.impl.JPAQuery;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 
 @Slf4j
+@Getter
 public class Option {
     private NumberPath<Long> field;
+    private String fieldName;
 
     private Long currentId;
     private Long lastId;
 
     private Order order;
     public Option(NumberPath<Long> field, Order order){
+        String[] args = field.toString().split("\\.");
         this.field = field;
+        this.fieldName = args[args.length-1];
         this.order = order;
     }
 
@@ -37,12 +42,12 @@ public class Option {
         if(isGroupByQuery) {
             currentId = clone
                     .select(field)
-                    .orderBy(order.equals(Order.ASC) ? field.asc() : field.desc())
+                    .orderBy(order.equals(Order.ASC) ? field.asc() : field.desc()) // 왜 Min Max로 안 됨?
                     .fetchFirst();
         }else{
             currentId = clone
                     .select(order.equals(Order.ASC) ? field.min() : field.max())
-                    .fetchFirst();
+                    .fetchOne(); // fetchFirst
         }
 
     }
@@ -60,7 +65,7 @@ public class Option {
         }else{
             lastId = clone
                     .select(order.equals(Order.ASC) ? field.max() : field.min())
-                    .fetchFirst();
+                    .fetchOne(); // fetchFirst
         }
 
     }
@@ -77,10 +82,9 @@ public class Option {
 
     public <T> void resetCurrentId(T item) { // 마지막 entity 받아서 id 필드 값 얻음
         try {
-            Field f = item.getClass().getDeclaredField(field.toString());
+            Field f = item.getClass().getDeclaredField(fieldName);
             f.setAccessible(true);
             currentId = (Long) f.get(item); // currentId 캐시
-            log.info("currentId : " + currentId);
 
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new IllegalArgumentException("Not Found or Not Access Field");
@@ -88,7 +92,7 @@ public class Option {
     }
 
     private boolean isGroupByQuery(JPAQuery query) {
-        return isGroupByQuery(query);
+        return query.toString().contains("group by");
     }
 
     private BooleanExpression whereExpression(NumberPath<Long> id, int page, Long currentId){
