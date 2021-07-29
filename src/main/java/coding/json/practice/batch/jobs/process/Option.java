@@ -5,12 +5,14 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.impl.JPAQuery;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 
 @Slf4j
 @Getter
+@NoArgsConstructor
 public class Option {
     private NumberPath<Long> field;
     private String fieldName;
@@ -37,6 +39,7 @@ public class Option {
     public <T> void initFirstId(JPAQuery<T> query) {
 
         JPAQuery<T> clone = query.clone(); // clone - 쿼리 복사
+        log.warn("sql문 확인합시다! = " + clone.toString());
         boolean isGroupByQuery = isGroupByQuery(clone);
 
         if(isGroupByQuery) {
@@ -75,7 +78,7 @@ public class Option {
             return query;
         }
         return query
-                .where(whereExpression(field, page, currentId),
+                .where(whereExpression(order, field, page, currentId),
                         order.equals(Order.ASC) ? field.loe(lastId) : field.goe(lastId))
                 .orderBy(order.equals(Order.ASC) ? field.asc() : field.desc());
     }
@@ -95,8 +98,11 @@ public class Option {
         return query.toString().contains("group by");
     }
 
-    private BooleanExpression whereExpression(NumberPath<Long> id, int page, Long currentId){
-        return page == 0 ? id.goe(currentId) : id.gt(currentId);
+    private BooleanExpression whereExpression(Order order, NumberPath<Long> id, int page, Long currentId){
+        if(order.equals(Order.ASC)) {
+            return page == 0 ? id.goe(currentId) : id.gt(currentId);
+        }
+        return page == 0 ? id.loe(currentId) : id.lt(currentId);
     }
 
 }

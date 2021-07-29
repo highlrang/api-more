@@ -20,30 +20,23 @@ import java.time.LocalDateTime;
 @Slf4j
 public class BatchScheduler {
 
-    @Autowired
-    private final QuerydslNoOffsetPagingItemReaderConfig job;
     private final JobLauncher jobLauncher;
+    @Autowired Job job;
 
     @Scheduled(cron = "0 */1 * * * *")
     public void executeJob () {
         try {
             log.info("---------------job 실행 전----------------");
 
-            job.setChunkSize(10);
-
             jobLauncher.run(
-                    job.noOffsetJob(),
-                    // new JobParametersBuilder().toJobParameters()
+                    job,
                     new JobParametersBuilder()
-                            .addString("datetime", LocalDateTime.now().toString())
+                            // .addString("datetime", LocalDateTime.now().toString())
                             .addString("email", "@")
-                            // .addString("chunk", "10")
+                            .addString("chunkSize", "10")
                             // .addJobParameters(new JobParameters())
                             .toJobParameters()
             );
-
-
-
 
             log.info("---------------job 실행 후----------------");
         } catch (Exception ex) {

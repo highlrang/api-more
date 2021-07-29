@@ -35,7 +35,7 @@ public class JobParameterExtendsConfig {
     private static final String JOB_NAME = "ParameterExtendsJob";
     private static final int chunkSize = 2;
 
-    @Bean
+    // @Bean
     public Job parameterJob(){
         return jobBuilderFactory.get(JOB_NAME)
                 .start(step())

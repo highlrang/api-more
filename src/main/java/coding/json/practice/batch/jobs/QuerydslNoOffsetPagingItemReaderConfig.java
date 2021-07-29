@@ -3,6 +3,7 @@ package coding.json.practice.batch.jobs;
 
 import coding.json.practice.batch.jobs.process.Option;
 import coding.json.practice.batch.jobs.process.QuerydslNoOffsetPagingItemReader;
+import coding.json.practice.batch.jobs.process.QuerydslPagingItemReader;
 import coding.json.practice.batch.jobs.process.QuerydslPagingItemReaderJobParameter;
 import coding.json.training.domain.Member;
 import coding.json.training.domain.QMember;
@@ -13,6 +14,7 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.database.builder.JpaItemWriterBuilder;
@@ -35,27 +37,28 @@ public class QuerydslNoOffsetPagingItemReaderConfig {
     private final EntityManagerFactory emf;
     private final QuerydslPagingItemReaderJobParameter jobParameter;
 
-    private int chunkSize;
-    @Value("${chunkSize:10}") // 1000 어떻게 setting?
+    private int chunkSize; // final?
+    @Value("${chunkSize:10}") // 1000 어떻게 setting? setter이 자동 지정?
     public void setChunkSize(int chunkSize) {
+        log.info("chunkSize 넘어왔는지???" + chunkSize);
         this.chunkSize = chunkSize;
     }
 
     @Bean
     @JobScope
-    public QuerydslPagingItemReaderJobParameter jobParameter() {
+    public QuerydslPagingItemReaderJobParameter jobParameter() { // DI
         return new QuerydslPagingItemReaderJobParameter();
     }
 
     @Bean
     public Job noOffsetJob() {
         return jobBuilderFactory.get(JOB_NAME)
-                .start(step())
+                .start(왜안돼는거야())
                 .build();
     }
 
     @Bean
-    public Step step() {
+    public Step 왜안돼는거야() {
         return stepBuilderFactory.get("querydslNoOffsetPagingReaderStep")
                 .<Member, Member>chunk(chunkSize)
                 .reader(reader())
@@ -64,11 +67,15 @@ public class QuerydslNoOffsetPagingItemReaderConfig {
                 .build();
     }
 
+    // reader끼리 같은 빈 아닌데 extends 오버라이딩했다고 에러, config에 상위 클래스랑 같은 빈 사용하라고함
+    // >> 상위 모델 return으로 했더니 오버라이드 안되고 상위 클래스 사용됨
+    // >> 스텝이 아예 그쪽으로 실행되어서 빈 지워줌 ...
     @Bean
+    @StepScope
     public QuerydslNoOffsetPagingItemReader<Member> reader() {
         // 1. No Offset 옵션
-        Option options = new Option(member.id, Order.DESC);
-
+        Option options = new Option(member.id, Order.DESC); // 파라미터로 받을 수 있음
+        log.info("이메일 = " + jobParameter.getEmail());
         // 2. Querydsl
         return new QuerydslNoOffsetPagingItemReader<>(emf, chunkSize, options, queryFactory -> queryFactory
                 .selectFrom(member)

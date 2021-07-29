@@ -23,7 +23,7 @@ public class SimpleJobConfig {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
-    @Bean
+    // @Bean
     public Job simpleJob(){
         return jobBuilderFactory.get("simpleTaskletJob")
                 .start(simpleStep1(null))

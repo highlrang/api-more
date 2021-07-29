@@ -25,7 +25,7 @@ public class DeciderJobConfig {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
-    @Bean
+    // @Bean
     public Job deciderJob(){
         return jobBuilderFactory.get("stepDeciderJob")
                 .start(startStep())

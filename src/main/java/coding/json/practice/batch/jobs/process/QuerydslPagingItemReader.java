@@ -2,26 +2,30 @@ package coding.json.practice.batch.jobs.process;
 
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.database.AbstractPagingItemReader;
 import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 
+@Slf4j
 public class QuerydslPagingItemReader<T> extends AbstractPagingItemReader<T> {
 
     protected final Map<String, Object> jpaPropertyMap = new HashMap<>();
     protected EntityManagerFactory entityManagerFactory;
     protected EntityManager entityManager;
     protected Function<JPAQueryFactory, JPAQuery<T>> queryFunction;
-    protected boolean transacted = true;//default value
+    protected boolean transacted = true; //default value
 
     protected QuerydslPagingItemReader() {
         setName(ClassUtils.getShortName(QuerydslPagingItemReader.class));
@@ -30,10 +34,19 @@ public class QuerydslPagingItemReader<T> extends AbstractPagingItemReader<T> {
     public QuerydslPagingItemReader(EntityManagerFactory entityManagerFactory,
                                     int pageSize,
                                     Function<JPAQueryFactory, JPAQuery<T>> queryFunction) {
+        this(entityManagerFactory, pageSize, true, queryFunction);
+    }
+
+    public QuerydslPagingItemReader(EntityManagerFactory entityManagerFactory,
+                                    int pageSize,
+                                    boolean transacted,
+                                    Function<JPAQueryFactory, JPAQuery<T>> queryFunction) {
         this();
         this.entityManagerFactory = entityManagerFactory;
-        this.queryFunction = queryFunction; // reader return으로 람다 표현식 사용하게
-        setPageSize(pageSize); // chunkSize
+        this.queryFunction = queryFunction;
+        setPageSize(pageSize);
+        setTransacted(transacted);
+
     }
 
     public void setTransacted(boolean transacted) {
@@ -53,22 +66,27 @@ public class QuerydslPagingItemReader<T> extends AbstractPagingItemReader<T> {
     @Override
     @SuppressWarnings("unchecked")
     protected void doReadPage() {
-        // trasaction 관련 코드는 커밋 단위이기에 제거 - 페이징(청크 단위)의 트랜잭션이 따로 관리함
-        clearIfTransacted();
+        EntityTransaction tx = getTxOrNull();
 
         JPAQuery<T> query = createQuery() // 아래에서 Querydsl 쿼리 생성
                 .offset(getPage() * getPageSize())
                 .limit(getPageSize());
+        log.info("여기는 심플 리더입니다.");
 
         initResults();
 
-        fetchQuery(query);
+        fetchQuery(query, tx);
     }
 
-    protected void clearIfTransacted() {
-        if (transacted) {
+    protected EntityTransaction getTxOrNull() {
+        if(transacted){
+            EntityTransaction tx = entityManager.getTransaction();
+            tx.begin();
+            entityManager.flush();
             entityManager.clear();
+            return tx;
         }
+        return null;
     }
 
     protected JPAQuery<T> createQuery() {
@@ -84,15 +102,18 @@ public class QuerydslPagingItemReader<T> extends AbstractPagingItemReader<T> {
         }
     }
 
-    protected void fetchQuery(JPAQuery<T> query) {
-        if (!transacted) {
+    protected void fetchQuery(JPAQuery<T> query, EntityTransaction tx) {
+        if (transacted) {
+            results.addAll(query.fetch());
+            if (tx != null) {
+                tx.commit();
+            }
+        }else{
             List<T> queryResult = query.fetch();
             for (T entity : queryResult) {
                 entityManager.detach(entity);
                 results.add(entity);
             }
-        } else {
-            results.addAll(query.fetch());
         }
     }
 

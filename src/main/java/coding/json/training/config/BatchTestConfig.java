@@ -20,8 +20,7 @@ import javax.persistence.EntityManagerFactory;
 @RequiredArgsConstructor
 @EnableBatchProcessing
 @EnableAutoConfiguration
-// @EnableJpaRepositories("coding.json.training.repository")
-public class BatchTestConfig {
+public class BatchTestConfig { // 필요없음
 
     private final EntityManagerFactory emf;
     private final JobBuilderFactory jobBuilderFactory;

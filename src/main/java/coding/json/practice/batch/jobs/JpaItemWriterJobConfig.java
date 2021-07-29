@@ -30,7 +30,7 @@ public class JpaItemWriterJobConfig {
 
     private static final int chunkSize = 10;
 
-    @Bean
+    // @Bean
     public Job jpaWriterJob() {
         return jobBuilderFactory.get("jpaItemWriterJob")
                 .start(itemWriterStep())

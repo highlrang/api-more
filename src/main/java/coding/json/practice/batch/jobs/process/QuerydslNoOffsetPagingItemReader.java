@@ -2,11 +2,17 @@ package coding.json.practice.batch.jobs.process;
 
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import java.util.function.Function;
 
+@Slf4j
 public class QuerydslNoOffsetPagingItemReader<T> extends QuerydslPagingItemReader<T> {
 
     private Option options;
@@ -20,26 +26,23 @@ public class QuerydslNoOffsetPagingItemReader<T> extends QuerydslPagingItemReade
                                             int pageSize,
                                             Option options, // 조건식
                                             Function<JPAQueryFactory, JPAQuery<T>> queryFunction) {
-        // super(entityManagerFactory, pageSize, queryFunction);
-        this();
-        super.entityManagerFactory = entityManagerFactory;
-        super.queryFunction = queryFunction;
-        setPageSize(pageSize);
-
+        super(entityManagerFactory, pageSize, queryFunction);
         this.options = options;
+        setName(ClassUtils.getShortName(QuerydslNoOffsetPagingItemReader.class));
     }
 
     @Override
     @SuppressWarnings("unchecked")
     protected void doReadPage() {
 
-        clearIfTransacted();
+        EntityTransaction tx = getTxOrNull();
 
         JPAQuery<T> query = createQuery().limit(getPageSize()); //
+        log.info("여기는 noOffset 리더입니다");
 
         initResults();
 
-        fetchQuery(query);
+        fetchQuery(query, tx);
 
         resetCurrentIdIfNotLastPage(); // 조회된 페이지의 마지막 ID 캐시
     }
@@ -47,9 +50,10 @@ public class QuerydslNoOffsetPagingItemReader<T> extends QuerydslPagingItemReade
     @Override
     protected JPAQuery<T> createQuery() {
         JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
-        options.initKeys(queryFunction.apply(queryFactory), getPage()); // 제일 첫번째 페이징시 시작해야할 ID 찾기
+        JPAQuery<T> query = queryFunction.apply(queryFactory);
+        options.initKeys(query, getPage()); // 제일 첫번째 페이징시 시작해야할 ID 찾기
 
-        return options.createQuery(queryFunction.apply(queryFactory), getPage()); // 캐시된 ID를 기준으로 페이징 쿼리 생성
+        return options.createQuery(query, getPage()); // 캐시된 ID를 기준으로 페이징 쿼리 생성
     }
 
     private void resetCurrentIdIfNotLastPage() {

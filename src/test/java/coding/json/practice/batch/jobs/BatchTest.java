@@ -12,16 +12,21 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -31,23 +36,21 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.batch.runtime.BatchStatus;
 import javax.persistence.EntityManagerFactory;
 
+import java.time.LocalDateTime;
+
 import static coding.json.training.domain.QMember.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static coding.json.training.domain.QMember.member;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest //(classes = {BatchTestConfig.class, QuerydslNoOffsetPagingItemReaderConfig.class})
-// 그냥 paging도 테스트 해보기
-@EnableAutoConfiguration(exclude = {})
-@ContextConfiguration(classes = QuerydslNoOffsetPagingItemReaderConfig.class)
+@SpringBootTest// (classes = {BatchTestConfig.class, QuerydslNoOffsetPagingItemReaderConfig.class})
 @RunWith(SpringRunner.class)
-@SpringBatchTest // JobLauncherTestUtils ... //querydslNoOffsetPagingReaderJob noOffsetJob
-@TestPropertySource(properties = {"job.name=noOffsetJob", "chunkSize=5", "email=1"})
+@SpringBatchTest // JobLauncherTestUtils ...
 public class BatchTest {
 
     @Autowired EntityManagerFactory emf;
     @Autowired JobLauncherTestUtils jobLauncherTestUtils;
-    @Autowired JPAQueryFactory jpaQueryFactory;
+    @Autowired Job job;
 
     @Test
     public void 필드이름(){
@@ -78,31 +81,15 @@ public class BatchTest {
 
 
     @Test
-    public void 쿼리확인(){
-        jpaQueryFactory.select(member.id)
-                .from(member)
-                .fetch();
-    }
-
-    @Test
-    public void 잡실행() throws Exception { // class 지정하면 member 인식 안됨
+    public void Job실행() throws Exception {
 
         JobParameters jobParameters = new JobParametersBuilder()
                 .addString("chunkSize", "5")
-                .addString("email", "1")
+                .addString("email", "@")
+                .addString("datetime", LocalDateTime.now().toString())
                 .toJobParameters();
 
-
-        /*
-        QuerydslPagingItemReaderJobParameter jobParameter = new QuerydslPagingItemReaderJobParameter();
-        jobParameter.setEmail("1");
-        QuerydslNoOffsetPagingItemReaderConfig config
-                = new QuerydslNoOffsetPagingItemReaderConfig(jobBuilderFactory, stepBuilderFactory, emf, jobParameter);
-
-         */
-
         JobExecution jobExecution = jobLauncherTestUtils.launchJob(jobParameters);
-
         assertThat(jobExecution.getStatus()).isEqualTo(BatchStatus.COMPLETED);
 
     }

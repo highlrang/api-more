@@ -30,7 +30,7 @@ public class JpaCursorItemReaderJobConfig {
         this.chunkSize = chunkSize;
     }
 
-    @Bean
+    // @Bean
     public Job jpaCursorJob() {
         return jobBuilderFactory.get("jpaCursorItemReaderJob")
                 .start(itemReaderStep())

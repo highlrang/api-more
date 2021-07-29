@@ -1,11 +1,10 @@
-package coding.json.practice.batch;
+package coding.json.practice.batch.jobs.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -25,7 +24,7 @@ insert into pay (amount, tx_name, tx_date_time) VALUES (4000, 'trade4', '2018-09
 @Getter
 @Setter
 @NoArgsConstructor
-@Entity
+// @Entity
 public class Pay {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
 
@@ -47,5 +46,11 @@ public class Pay {
         this.amount = amount;
         this.txName = txName;
         this.txDateTime = LocalDateTime.parse(txDateTime, FORMATTER);
+    }
+
+    public Pay(Long amount, String txName, LocalDateTime txDateTime) {
+        this.amount = amount;
+        this.txName = txName;
+        this.txDateTime = txDateTime;
     }
 }

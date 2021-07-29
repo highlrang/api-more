@@ -41,18 +41,18 @@ public class QuerydslPagingItemReaderConfig {
 
     @Bean
     @JobScope
-     public QuerydslPagingItemReaderJobParameter jobParameter() {
+    public QuerydslPagingItemReaderJobParameter jobParameter() {
         return new QuerydslPagingItemReaderJobParameter();
     }
 
-    @Bean
+    //@Bean
     public Job querydslJob() {
         return jobBuilderFactory.get(JOB_NAME)
                 .start(step())
                 .build();
     }
 
-    @Bean
+    // @Bean
     public Step step() {
         return stepBuilderFactory.get("querydslPagingReaderStep")
                 .<Member, Member>chunk(chunkSize)
@@ -62,10 +62,10 @@ public class QuerydslPagingItemReaderConfig {
                 .build();
     }
 
-    @Bean // reader에서 custom한 QuerydslItemReader 사용
+    // @Bean // reader에서 custom한 QuerydslItemReader 사용
     public QuerydslPagingItemReader<Member> reader() {
-        return new QuerydslPagingItemReader<>(emf, chunkSize, queryFactory -> queryFactory
-                .selectFrom(member));
+        return null;
+        // new QuerydslPagingItemReader<>()(emf, chunkSize, queryFactory -> queryFactory.selectFrom(member));
                 // .where(product.createDate.eq(jobParameter.getTxDate())));
     }
 

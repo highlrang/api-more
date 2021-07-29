@@ -26,7 +26,7 @@ public class JpaItemListWriterJobConfig {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
-    @Bean
+    // @Bean
     public Job jpaListWriterJob(){
         return jobBuilderFactory.get("itemListJob")
                 .start(step())

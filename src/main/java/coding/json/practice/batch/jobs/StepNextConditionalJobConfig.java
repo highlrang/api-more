@@ -19,7 +19,7 @@ public class StepNextConditionalJobConfig {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
-    @Bean
+    // @Bean
     public Job stepJob(){
         return jobBuilderFactory.get("stepNextConditionalJob")
                 .start(conditionalJobStep1())                       // 실패면 3으로
