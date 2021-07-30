@@ -39,18 +39,18 @@ public class Option {
     public <T> void initFirstId(JPAQuery<T> query) {
 
         JPAQuery<T> clone = query.clone(); // clone - 쿼리 복사
-        log.warn("sql문 확인합시다! = " + clone.toString());
+        log.warn("원조 sql문 = " + clone.toString());
         boolean isGroupByQuery = isGroupByQuery(clone);
 
         if(isGroupByQuery) {
             currentId = clone
                     .select(field)
-                    .orderBy(order.equals(Order.ASC) ? field.asc() : field.desc()) // 왜 Min Max로 안 됨?
+                    .orderBy(order.equals(Order.ASC) ? field.asc() : field.desc())
                     .fetchFirst();
         }else{
             currentId = clone
                     .select(order.equals(Order.ASC) ? field.min() : field.max())
-                    .fetchOne(); // fetchFirst
+                    .fetchOne();
         }
 
     }
@@ -59,22 +59,24 @@ public class Option {
         JPAQuery<T> clone = query.clone();
         boolean isGroupByQuery = isGroupByQuery(query);
 
+        // 맨 끝 id 구하는 거니 반대로 정렬
         if(isGroupByQuery){
             lastId = clone
                     .select(field)
                     .orderBy(order.equals(Order.ASC) ? field.desc() : field.asc())
-                    // 맨 끝 id 구하는 거니 반대로 정렬
                     .fetchFirst();
         }else{
             lastId = clone
                     .select(order.equals(Order.ASC) ? field.max() : field.min())
-                    .fetchOne(); // fetchFirst
+                    .fetchOne();
         }
 
     }
 
     public <T> JPAQuery<T> createQuery(JPAQuery<T> query, int page) {
-        if(currentId == null){
+        log.info("now page = " + page);
+
+        if(currentId == null){ // ?
             return query;
         }
         return query
@@ -88,6 +90,7 @@ public class Option {
             Field f = item.getClass().getDeclaredField(fieldName);
             f.setAccessible(true);
             currentId = (Long) f.get(item); // currentId 캐시
+            log.info("now currentId = " + currentId);
 
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new IllegalArgumentException("Not Found or Not Access Field");

@@ -84,7 +84,6 @@ public class BatchTest {
     public void Job실행() throws Exception {
 
         JobParameters jobParameters = new JobParametersBuilder()
-                .addString("chunkSize", "5")
                 .addString("email", "@")
                 .addString("datetime", LocalDateTime.now().toString())
                 .toJobParameters();

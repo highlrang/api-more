@@ -6,7 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
 @Getter
 @Slf4j
@@ -16,12 +18,10 @@ public class QuerydslPagingItemReaderJobParameter {
     @Value("#{jobParameters[email]}")
     private String email;
 
-    /*
-    @Value("#{jobParameters[email]}")
-    public void setEmail(String email){ // 형변환 시 세터 사용
-        this.email = email;
-        // this.txDate = LocalDate.parse(txDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    }
+    private LocalDateTime joinDate;
 
-     */
+    @Value("#{jobParameters[joinDate]}")
+    public void setJoinDate(String joinDate){
+        this.joinDate = LocalDateTime.parse(joinDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    }
 }

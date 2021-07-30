@@ -3,10 +3,11 @@ package coding.json.training.dto;
 import coding.json.training.domain.Member;
 import coding.json.training.domain.dept.Department;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 @Getter
-@Setter
 @NoArgsConstructor
+@Slf4j
 public class MemberResponseDto {
 
     private Long id;

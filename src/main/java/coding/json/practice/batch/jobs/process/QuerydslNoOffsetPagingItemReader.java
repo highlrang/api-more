@@ -26,7 +26,7 @@ public class QuerydslNoOffsetPagingItemReader<T> extends QuerydslPagingItemReade
                                             int pageSize,
                                             Option options, // 조건식
                                             Function<JPAQueryFactory, JPAQuery<T>> queryFunction) {
-        super(entityManagerFactory, pageSize, queryFunction);
+        super(entityManagerFactory, pageSize, queryFunction); // pageSize == chunkSize
         this.options = options;
         setName(ClassUtils.getShortName(QuerydslNoOffsetPagingItemReader.class));
     }
@@ -37,14 +37,14 @@ public class QuerydslNoOffsetPagingItemReader<T> extends QuerydslPagingItemReade
 
         EntityTransaction tx = getTxOrNull();
 
-        JPAQuery<T> query = createQuery().limit(getPageSize()); //
-        log.info("여기는 noOffset 리더입니다");
+        JPAQuery<T> query = createQuery().limit(getPageSize()); // option에서 가공된 쿼리에 여기서 페이징
+        log.info("여기는 noOffset 리더입니다. chunckSize(pageSize) = " + getPageSize());
 
         initResults();
 
         fetchQuery(query, tx);
 
-        resetCurrentIdIfNotLastPage(); // 조회된 페이지의 마지막 ID 캐시
+        resetCurrentIdIfNotLastPage(); // 조회된 페이지의 마지막 ID 캐시(갱신)
     }
 
     @Override

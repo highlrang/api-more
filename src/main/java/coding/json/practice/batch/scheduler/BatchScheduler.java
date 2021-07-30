@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Component
 @RequiredArgsConstructor
@@ -26,19 +28,19 @@ public class BatchScheduler {
     @Scheduled(cron = "0 */1 * * * *")
     public void executeJob () {
         try {
-            log.info("---------------job 실행 전----------------");
-
+            log.info(String.format("---------------%s job 실행 전----------------", job.getName()));
+            String beforeAMonth = LocalDateTime.now().minusMonths(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            log.info("BeforeAMonth = " + beforeAMonth);
             jobLauncher.run(
                     job,
                     new JobParametersBuilder()
-                            // .addString("datetime", LocalDateTime.now().toString())
-                            .addString("email", "@")
-                            .addString("chunkSize", "10")
-                            // .addJobParameters(new JobParameters())
+                            .addString("datetime", LocalDateTime.now().toString())
+                            .addString("joinDate", beforeAMonth)
                             .toJobParameters()
             );
 
-            log.info("---------------job 실행 후----------------");
+            log.info(String.format("---------------%s job 실행 후----------------", job.getName()));
+
         } catch (Exception ex) {
             log.error(ex.getMessage());
         }
