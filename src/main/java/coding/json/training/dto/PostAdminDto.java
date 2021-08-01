@@ -8,18 +8,16 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Getter
-public class BestPostAdminDto {
+public class PostAdminDto {
 
     private Long id;
     private String name;
     private Category category;
-    private Integer resolutionDegree;
 
     @Builder
-    public BestPostAdminDto(Long id, String name, Category category, Integer resolutionDegree){
+    public PostAdminDto(Long id, String name, Category category) {
         this.id = id;
         this.name = name;
         this.category = category;
-        this.resolutionDegree = resolutionDegree;
     }
 }

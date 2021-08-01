@@ -1,10 +1,12 @@
 package coding.json.practice.batch.jobs.process;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.database.JpaItemWriter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class JpaItemListWriter<T> extends JpaItemWriter<List<T>> { // T == List<T>
     private JpaItemWriter<T> jpaItemWriter;
 
@@ -13,11 +15,13 @@ public class JpaItemListWriter<T> extends JpaItemWriter<List<T>> { // T == List<
     }
 
     @Override
-    public void write(List<? extends List<T>> items){
+    public void write(List<? extends List<T>> items){ // 이중 리스트 넘겨받음
         List<T> totalList = new ArrayList<>();
         for(List<T> list : items){
             totalList.addAll(list);
+            log.info("write 없이 logging = " + list.toArray());
         }
-        jpaItemWriter.write(totalList);
+        // jpaItemWriter.write(totalList); // merge
+
     }
 }

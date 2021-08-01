@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.persistence.EntityManagerFactory;
 import static coding.json.training.domain.QMember.member;
+import static coding.json.training.domain.dept.QDepartment.department;
 import coding.json.practice.batch.jobs.process.QuerydslPagingItemReaderJobParameter;
 
 @Slf4j
@@ -45,36 +46,38 @@ public class QuerydslPagingItemReaderConfig {
         return new QuerydslPagingItemReaderJobParameter();
     }
 
-    //@Bean
-    public Job querydslJob() {
+    // @Bean
+    public Job querydslPagingJob() {
         return jobBuilderFactory.get(JOB_NAME)
                 .start(step())
                 .build();
     }
 
-    // @Bean
+    @Bean
     public Step step() {
         return stepBuilderFactory.get("querydslPagingReaderStep")
                 .<Member, Member>chunk(chunkSize)
-                .reader(reader())
-                .processor(processor())
-                .writer(writer())
+                .reader(querydslPagingReader())
+                .processor(querydslPagingProcessor())
+                .writer(querydslPagingWriter())
                 .build();
     }
 
-    // @Bean // reader에서 custom한 QuerydslItemReader 사용
-    public QuerydslPagingItemReader<Member> reader() {
-        return null;
-        // new QuerydslPagingItemReader<>()(emf, chunkSize, queryFactory -> queryFactory.selectFrom(member));
-                // .where(product.createDate.eq(jobParameter.getTxDate())));
+    @Bean // reader에서 custom한 QuerydslItemReader 사용
+    public QuerydslPagingItemReader<Member> querydslPagingReader() {
+        return new QuerydslPagingItemReader<>(emf, chunkSize, queryFactory ->
+                queryFactory.selectFrom(member)
+                        .join(member.department, department)
+                        .fetchJoin()
+                        .where(department.joinDate.before(jobParameter.getJoinDate())));
     }
 
-    private ItemProcessor<Member, Member> processor() {
+    private ItemProcessor<Member, Member> querydslPagingProcessor() {
         return Member::new;
     }
 
     @Bean
-    public JpaItemWriter<Member> writer() {
+    public JpaItemWriter<Member> querydslPagingWriter() {
         return new JpaItemWriterBuilder<Member>()
                 .entityManagerFactory(emf)
                 .build();

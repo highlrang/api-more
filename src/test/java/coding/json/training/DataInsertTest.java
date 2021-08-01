@@ -34,7 +34,7 @@ public class DataInsertTest {
     @Autowired PostAdminRepository postAdminRepository;
     @Autowired MemberQuerydslRepository memberQuerydslRepository;
 
-    @Test // @Commit
+    @Test @Commit
     public void 멤버저장(){
 
         Category[] categories = Category.values();
@@ -46,8 +46,8 @@ public class DataInsertTest {
                 category = categories[i];
             }
 
-            PostAdmin postAdmin = new PostAdmin(Position.Staff, category);
-            departmentRepository.save(postAdmin);
+            PostAdmin postAdmin = postAdminRepository.findByCategoryAndPosition(category, Position.Staff).get();
+
             Member member = Member.builder().email("email"+i+"@email.com").name(category.toString()+"게시판관리자"+i).build();
             member.addDepartment(postAdmin);
             memberRepository.save(member);
@@ -60,24 +60,6 @@ public class DataInsertTest {
         for(PostAdmin p: postAdmins) System.out.println(p.getCategory().name());
 
 
-
-    }
-
-    @Test @Commit
-    public void 해결지수(){
-        List<PostAdmin> postAdmins = (List<PostAdmin>)departmentRepository.findAll();
-
-        for(int i=0; i<postAdmins.size(); i++){
-            if(i%2==0){
-                postAdmins.get(i).updateResolutionDegree(20);
-            }else if(i%3==0){
-                postAdmins.get(i).updateResolutionDegree(30);
-            }else if(i%5==0){
-                postAdmins.get(i).updateResolutionDegree(50);
-            }else{
-                postAdmins.get(i).updateResolutionDegree(10);
-            }
-        }
 
     }
 

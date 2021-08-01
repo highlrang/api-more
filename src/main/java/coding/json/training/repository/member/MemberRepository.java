@@ -1,7 +1,6 @@
 package coding.json.training.repository.member;
 
 import coding.json.training.domain.Member;
-import coding.json.training.dto.BestPostAdminDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -1,6 +1,7 @@
 package coding.json.practice.batch.jobs;
 
 import coding.json.practice.batch.jobs.entity.Pay;
+import coding.json.training.domain.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -34,36 +35,36 @@ public class JpaPagingItemReaderJobConfig {
 
     private final static int chunkSize = 10;
 
-    //@Bean
+    // @Bean
     public Job jpaPagingJob(){
         return jobBuilderFactory.get("jpaPagingItemReaderJob")
-                .start(itemReaderStep())
+                .start(pagingItemReaderStep())
                 .build();
     }
 
     @Bean
-    public Step itemReaderStep(){
+    public Step pagingItemReaderStep(){
         return stepBuilderFactory.get("jpaPagingItemReaderStep")
-                .<Pay, Pay>chunk(chunkSize)
-                .reader(itemReader())
-                .writer(itemWriter())
+                .<Member, Member>chunk(chunkSize)
+                .reader(pagingItemReader())
+                .writer(pagingItemWriter())
                 .build();
     }
 
     @Bean
-    public JpaPagingItemReader<Pay> itemReader(){ // RepositoryItemReader
-        return new JpaPagingItemReaderBuilder<Pay>()
+    public JpaPagingItemReader<Member> pagingItemReader(){ // RepositoryItemReader
+        return new JpaPagingItemReaderBuilder<Member>()
                 .name("jpaPagingItemReader")
                 .entityManagerFactory(entityManagerFactory)
                 .pageSize(chunkSize)
-                .queryString("select p from Pay p where amount >= 2000") // order by 필요 !!
+                .queryString("select m from Member m") // order by 필요 !!
                 .build();
     }
 
-    private ItemWriter<Pay> itemWriter(){ // list(chunk)
+    private ItemWriter<Member> pagingItemWriter(){ // list(chunk)
         return list -> {
-            for (Pay pay:list){
-                log.info("Current Pay = {}", pay);
+            for (Member member:list){
+                log.info("Current memberId = {}", member.getId());
             }
         };
     }

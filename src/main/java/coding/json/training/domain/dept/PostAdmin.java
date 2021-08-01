@@ -18,17 +18,10 @@ public class PostAdmin extends Department{ // HumanResource, Design, Marketing, 
 
     @Enumerated(EnumType.STRING)
     private Category category;
-    @Column(columnDefinition = "integer default 0")
-    private Integer resolutionDegree;
 
     @Builder
     public PostAdmin(Position position, Category category){
         this.addPosition(position);
         this.category = category;
     }
-
-    public void updateResolutionDegree(int score){
-        resolutionDegree += score;
-    }
-
 }

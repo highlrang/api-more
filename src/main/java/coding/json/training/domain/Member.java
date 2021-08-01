@@ -2,8 +2,7 @@ package coding.json.training.domain;
 
 
 import coding.json.training.domain.dept.Department;
-import coding.json.training.domain.dept.Position;
-import coding.json.training.dto.BestPostAdminDto;
+import coding.json.training.dto.PostAdminDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,14 +24,13 @@ import javax.persistence.*;
 )
 */
 @SqlResultSetMapping(
-        name = "BestPostAdminMapping",
+        name = "PostAdminMapping",
         classes = @ConstructorResult(
-                targetClass = BestPostAdminDto.class,
+                targetClass = PostAdminDto.class,
                 columns = {
                         @ColumnResult(name = "id", type = Long.class),
                         @ColumnResult(name = "name"),
-                        @ColumnResult(name = "category"),
-                        @ColumnResult(name = "resolutionDegree", type = Integer.class)
+                        @ColumnResult(name = "category")
                 }
         )
 )
@@ -63,6 +61,10 @@ public class Member { // manager administrator
     public void addDepartment(Department department){
         this.department = department;
         department.getMembers().add(this);
+    }
+
+    public void deleteDepartment(){
+        department.getMembers().remove(this);
     }
 
 

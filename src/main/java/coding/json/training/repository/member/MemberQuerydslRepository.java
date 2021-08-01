@@ -3,7 +3,7 @@ package coding.json.training.repository.member;
 import coding.json.training.domain.Member;
 import coding.json.training.domain.dept.Category;
 import coding.json.training.domain.dept.Department;
-import coding.json.training.dto.BestPostAdminDto;
+import coding.json.training.dto.PostAdminDto;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -40,13 +40,23 @@ public class MemberQuerydslRepository { // extends QuerydslRepositorySupport
 
     }
 
-    public List<BestPostAdminDto> findBestPostAdmins(Category category, Integer degree){
+    public List<Member> findPostAdmins(Category category){
 
-        return queryFactory.select(Projections.constructor(BestPostAdminDto.class, member.id, member.name, postAdmin.category, postAdmin.resolutionDegree))
+        /*
+        queryFactory.select(Projections.constructor(PostAdminDto.class, member.id, member.name, postAdmin.category))
                 .from(member)
                 .innerJoin(postAdmin) // innerJoin 교집합 출력, leftJoin은 상대 데이터가 null이더라도 자기 데이터 모두 출력
                 .on(member.department.id.eq(postAdmin.id))
-                .where(postAdmin.category.eq(category), postAdmin.resolutionDegree.eq(degree))
+                .where(postAdmin.category.eq(category))
+                .fetch();
+        */
+        return queryFactory.select(member)
+                .from(department)
+                .join(department.members, member)
+                .fetchJoin()
+                .join(postAdmin)
+                .on(department.id.eq(postAdmin.id)) // fetchJoin 하기?
+                .where(postAdmin.category.eq(category))
                 .fetch();
     }
 

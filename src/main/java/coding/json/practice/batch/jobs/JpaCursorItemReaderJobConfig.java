@@ -10,7 +10,9 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JpaCursorItemReader;
 import org.springframework.batch.item.database.builder.JpaCursorItemReaderBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -25,7 +27,7 @@ public class JpaCursorItemReaderJobConfig {
     private final EntityManagerFactory entityManagerFactory;
 
     private int chunkSize;
-    @Value("${chunkSize:100}") // null일 시 100
+    @Value("${chunkSize:100}")
     public void setChunkSize(int chunkSize) {
         this.chunkSize = chunkSize;
     }
@@ -41,13 +43,13 @@ public class JpaCursorItemReaderJobConfig {
     public Step itemReaderStep() {
         return stepBuilderFactory.get("jpaCursorItemReaderStep")
                 .<Member, Member>chunk(chunkSize)
-                .reader(itemReader())
-                .writer(itemWriter())
+                .reader(cursorItemReader())
+                .writer(cursorItemWriter())
                 .build();
     }
 
     @Bean
-    public JpaCursorItemReader<Member> itemReader() {
+    public JpaCursorItemReader<Member> cursorItemReader() {
         return new JpaCursorItemReaderBuilder<Member>()
                 .name("jpaCursorItemReader")
                 .entityManagerFactory(entityManagerFactory)
@@ -55,7 +57,9 @@ public class JpaCursorItemReaderJobConfig {
                 .build();
     }
 
-    private ItemWriter<Member> itemWriter() {
+    private ItemWriter<Member> cursorItemWriter() {
+        // log를 위해 @Override
+        // insert 필요한 경우에는 processor로 객체 넘겨주면 JpaItemWriter가 merge함
         return list -> {
             for (Member m: list) {
                 log.info("Member Id={}", m.getId());

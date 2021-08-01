@@ -1,6 +1,6 @@
 package coding.json.training.repository.member;
 
-import coding.json.training.dto.BestPostAdminDto;
+import coding.json.training.dto.PostAdminDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -18,14 +18,13 @@ public class MemberQueryRepository {
 
     // entity orm 쓸 수 없어서(추상부모의 자식이라 getter로 안 불러짐) >> native query
     // 그냥 query여야 dto 생성자로 entity orm으로 받을 수 있음
-    public List<BestPostAdminDto> findBestPostAdmins(String category, Integer degree){
+    public List<PostAdminDto> findPostAdmins(String category){
 
-        List results = em.createNativeQuery("select m.id as id, m.name as name, category, d.resolution_degree as resolutionDegree" +
+        List results = em.createNativeQuery("select m.id as id, m.name as name, category" +
                         " from member m join department d on m.department_id = d.id" +
-                        " where d.category =:category and d.resolution_degree =:degree",
-                "BestPostAdminMapping")
+                        " where d.category =:category",
+                "PostAdminMapping")
                 .setParameter("category", category)
-                .setParameter("degree", degree)
                 .getResultList();
 
         return new ArrayList<>();
