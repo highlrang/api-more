@@ -21,6 +21,7 @@ public class Option {
     private Long lastId;
 
     private Order order;
+
     public Option(NumberPath<Long> field, Order order){
         String[] args = field.toString().split("\\.");
         this.field = field;

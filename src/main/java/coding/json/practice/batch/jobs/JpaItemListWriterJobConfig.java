@@ -5,7 +5,9 @@ import coding.json.practice.batch.jobs.process.JpaItemListWriter;
 import coding.json.practice.batch.jobs.entity.Sales;
 import coding.json.practice.batch.jobs.entity.Tax;
 import coding.json.training.domain.Member;
+import coding.json.training.domain.Notice;
 import coding.json.training.domain.dept.Department;
+import coding.json.training.domain.dept.PostAdmin;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -42,30 +44,28 @@ public class JpaItemListWriterJobConfig {
 
     private Step itemListStep(){
         return stepBuilderFactory.get("itemListStep")
-                .<Department, List<Member>>chunk(2)
+                .<Member, List<Notice>>chunk(1000)
                 .reader(itemListReader())
                 .processor(itemListProcessor())
                 .writer(itemListWriter())
                 .build();
     }
 
-    private JpaPagingItemReader<Department> itemListReader(){
-        JpaPagingItemReader<Department> reader = new JpaPagingItemReader<>();
-        reader.setQueryString("select d from Department d join fetch d.members m");
+    private JpaPagingItemReader<Member> itemListReader(){
+        JpaPagingItemReader<Member> reader = new JpaPagingItemReader<>();
+        reader.setQueryString("select m from Member m");
         reader.setEntityManagerFactory(entityManagerFactory);
         return reader;
     }
 
-    private ItemProcessor<Department, List<Member>> itemListProcessor(){
+    private ItemProcessor<Member, List<Notice>> itemListProcessor(){
         return new ItemListProcessor();
-        // custom해서 return 리스트 생성
     }
 
-    private JpaItemListWriter<Member> itemListWriter() {
+    private JpaItemListWriter<Notice> itemListWriter() {
         // custom해서 T 자리에 List<T> 전달 받음 > 두 개의 Sales를 통해 6개의 tax list가 write됨
-        JpaItemWriter<Member> writer = new JpaItemWriter<>();
+        JpaItemWriter<Notice> writer = new JpaItemWriter<>();
         writer.setEntityManagerFactory(entityManagerFactory);
-
         return new JpaItemListWriter<>(writer);
     }
 

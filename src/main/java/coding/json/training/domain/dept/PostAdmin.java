@@ -14,14 +14,13 @@ import javax.persistence.*;
 @NoArgsConstructor
 @DynamicInsert
 @Getter
-public class PostAdmin extends Department{ // HumanResource, Design, Marketing, Developer, CustomerService extends Department
+public class PostAdmin extends Department{
 
     @Enumerated(EnumType.STRING)
     private Category category;
 
     @Builder
-    public PostAdmin(Position position, Category category){
-        this.addPosition(position);
+    public PostAdmin(Category category){
         this.category = category;
     }
 }

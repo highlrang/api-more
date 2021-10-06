@@ -1,6 +1,6 @@
 package coding.json.training.controller;
 
-import coding.json.training.dto.BestPostAdminDto;
+import coding.json.training.dto.PostAdminDto;
 import coding.json.training.dto.MemberResponseDto;
 import coding.json.training.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +17,10 @@ public class MemberApiController {
 
     private final MemberService memberService;
 
-    @GetMapping("/external/api/v1/members/post-admin/best")
-    public List<BestPostAdminDto> members(){
-
-        return memberService.findBestPostAdmin();
-
+    @GetMapping("/external/api/v1/members/post-admin")
+    // url은 board에서도 변경 필요
+    public List<PostAdminDto> members(){
+        return memberService.findPostAdmin();
     }
 
 

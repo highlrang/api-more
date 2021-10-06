@@ -17,11 +17,14 @@ public class JpaItemListWriter<T> extends JpaItemWriter<List<T>> { // T == List<
     @Override
     public void write(List<? extends List<T>> items){ // 이중 리스트 넘겨받음
         List<T> totalList = new ArrayList<>();
+
         for(List<T> list : items){
             totalList.addAll(list);
-            log.info("write 없이 logging = " + list.toArray());
+            log.info("write 아닌 logging = " + list.toArray());
         }
-        // jpaItemWriter.write(totalList); // merge
+
+        // write
+        jpaItemWriter.write(totalList); // merge
 
     }
 }

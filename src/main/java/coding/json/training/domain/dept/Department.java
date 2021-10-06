@@ -18,23 +18,15 @@ import java.util.List;
 @Entity
 @Getter
 public abstract class Department {
+    // HumanResource, Design, Marketing, Developer, CustomerService extends Department
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Position position;
-
-    @CreatedDate
-    private LocalDateTime joinDate;
+    private String name;
 
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
     private List<Member> members = new ArrayList<>();
 
-    public void addPosition(Position position) {
-        this.position = position;
-    }
-
-    public void removeMember(Member member){
-        this.members.remove(member);
-    }
 }

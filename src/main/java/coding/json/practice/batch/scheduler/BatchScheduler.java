@@ -2,6 +2,8 @@ package coding.json.practice.batch.scheduler;
 
 import coding.json.practice.batch.jobs.QuerydslNoOffsetPagingItemReaderConfig;
 import coding.json.practice.batch.jobs.process.QuerydslPagingItemReaderJobParameter;
+import coding.json.training.domain.Member;
+import coding.json.training.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -22,6 +24,7 @@ import java.time.format.DateTimeFormatter;
 @Slf4j
 public class BatchScheduler {
 
+    private final MemberRepository memberRepository;
     private final JobLauncher jobLauncher;
     @Autowired Job job;
 
@@ -29,8 +32,10 @@ public class BatchScheduler {
     public void executeJob () {
         try {
             log.info(String.format("---------------%s job 실행 전----------------", job.getName()));
+
             String beforeAMonth = LocalDateTime.now().minusMonths(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             log.info("BeforeAMonth = " + beforeAMonth);
+
             jobLauncher.run(
                     job,
                     new JobParametersBuilder()

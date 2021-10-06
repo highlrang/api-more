@@ -12,6 +12,6 @@ import java.util.Optional;
 
 public interface PostAdminRepository extends JpaRepository<PostAdmin, Long> {
 
-    Optional<PostAdmin> findByCategoryAndPosition(Category category, Position position);
+    Optional<PostAdmin> findByCategory(Category category);
 
 }

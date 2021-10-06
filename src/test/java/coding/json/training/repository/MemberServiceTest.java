@@ -27,16 +27,16 @@ public class MemberServiceTest {
 
     @Test
     public void 멤버삭제(){
-        PostAdmin admin = new PostAdmin(Position.Staff, Category.Exercise); // findById
+        PostAdmin admin = new PostAdmin(Category.Exercise); // findById
         PostAdmin savedAdmin = (PostAdmin) departmentRepository.save(admin);
 
         MemberRequestDto memberRequestDto = new MemberRequestDto("정혜우", "jhw127@naver.com", admin);
-        Long id = memberService.saveMember(memberRequestDto);
+        Long id = memberService.save(memberRequestDto);
         MemberResponseDto memberResponseDto = memberService.findById(id);
 
 
         // when
-        memberService.deleteMember(id);
+        memberService.delete(id);
 
         // then
         assertThrows(IllegalStateException.class,

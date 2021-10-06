@@ -69,7 +69,7 @@ public class QuerydslPagingItemReaderConfig {
                 queryFactory.selectFrom(member)
                         .join(member.department, department)
                         .fetchJoin()
-                        .where(department.joinDate.before(jobParameter.getJoinDate())));
+                        .where(member.joinDate.before(jobParameter.getJoinDate())));
     }
 
     private ItemProcessor<Member, Member> querydslPagingProcessor() {

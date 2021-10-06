@@ -68,10 +68,9 @@ public class QuerydslPagingItemReader<T> extends AbstractPagingItemReader<T> {
     protected void doReadPage() {
         EntityTransaction tx = getTxOrNull();
 
-        JPAQuery<T> query = createQuery() // 아래에서 Querydsl 쿼리 생성
+        JPAQuery<T> query = createQuery() // Querydsl 쿼리 생성 메서드
                 .offset(getPage() * getPageSize())
                 .limit(getPageSize());
-        log.info("여기는 심플 리더입니다.");
 
         initResults();
 

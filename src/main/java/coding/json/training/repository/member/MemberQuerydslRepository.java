@@ -2,24 +2,15 @@ package coding.json.training.repository.member;
 
 import coding.json.training.domain.Member;
 import coding.json.training.domain.dept.Category;
-import coding.json.training.domain.dept.Department;
-import coding.json.training.dto.PostAdminDto;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static coding.json.training.domain.QMember.member;
 import static coding.json.training.domain.dept.QDepartment.department;
 import static coding.json.training.domain.dept.QPostAdmin.postAdmin;
-import static com.querydsl.core.group.GroupBy.groupBy;
-import static com.querydsl.core.group.GroupBy.list;
 
 @Repository
 @RequiredArgsConstructor

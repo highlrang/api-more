@@ -2,13 +2,18 @@ package coding.json.training.domain;
 
 
 import coding.json.training.domain.dept.Department;
+import coding.json.training.domain.dept.Position;
 import coding.json.training.dto.PostAdminDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
+@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
 @Getter
 @Entity
@@ -41,9 +46,12 @@ public class Member { // manager administrator
     private Long id;
     private String name;
     private String email;
+    @CreatedDate
+    private LocalDateTime joinDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Department department;
+    private Position position;
 
     @Builder
     public Member(String name, String email){
@@ -63,10 +71,8 @@ public class Member { // manager administrator
         department.getMembers().add(this);
     }
 
-    public void deleteDepartment(){
-        department.getMembers().remove(this);
+    public void setPosition(Position position) {
+        this.position = position;
     }
-
-
 
 }

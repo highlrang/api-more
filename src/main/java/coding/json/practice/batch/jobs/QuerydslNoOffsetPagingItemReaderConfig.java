@@ -77,13 +77,13 @@ public class QuerydslNoOffsetPagingItemReaderConfig {
     public QuerydslNoOffsetPagingItemReader<Member> reader() {
         // 1. No Offset 옵션
         Option options = new Option(member.id, Order.DESC);
-        log.info("한달 동안의 신입사원을 위한 기준 날짜 = " + jobParameter.getJoinDate());
+        log.info("신입사원을 위한 기준 날짜(한달 전) = " + jobParameter.getJoinDate());
 
         // 2. Querydsl
         return new QuerydslNoOffsetPagingItemReader<>(emf, chunkSize, options, queryFactory -> queryFactory
                 .selectFrom(member)
                 .join(member.department, department)
-                .where(department.joinDate.after(jobParameter.getJoinDate()),
+                .where(member.joinDate.after(jobParameter.getJoinDate()),
                         department.id.in(
                                 JPAExpressions
                                         .select(postAdmin.id)
